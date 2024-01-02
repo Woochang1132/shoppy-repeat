@@ -1,54 +1,39 @@
+import { initializeApp } from "firebase/app";
 import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 
-const provider = new GoogleAuthProvider();
+import { getDatabase, ref, get, set, remove } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DB_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
+const provider = new GoogleAuthProvider();
 
-signInWithRedirect(auth, provider);
+// OAuth 요청과 함께 전송할 커스텀 OAuth 매개변수를 추가로 지정
+// => 기존 구글 로그인 경우에도 선택창 확인하고 로그인할 수 있도록 설정
+provider.setCustomParameters({
+  prompt: "select_account",
+});
 
-getRedirectResult(auth)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access Google APIs.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
+// 팝업 창 및 로그인 페이지로 리디렉션 활용
+export async function login() {
+  return signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log("signInWithPopup reuslt >> ", result);
+    })
+    .catch((error) => {
+      console.log("signInWithPopup error", error);
+    });
+}
