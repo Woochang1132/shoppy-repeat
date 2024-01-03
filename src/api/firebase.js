@@ -50,6 +50,14 @@ export async function logout() {
       console.log("logout error", error);
     });
 }
+// 로그인 시도를 감지한다.
+export function onUserStateChange(callback) {
+  onAuthStateChanged(auth, async (user) => {
+    // user의 상태 변화를 감지
+    const updatedUser = user ? adminUser(user) : null;
+    callback(updatedUser);
+  });
+}
 
 async function adminUser(user) {
   // *. 일반 회원 vs 어드민 권한
