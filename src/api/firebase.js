@@ -37,3 +37,14 @@ export async function login() {
       console.log("signInWithPopup error", error);
     });
 }
+
+// 구글 인증을 활용한 로그아웃 방법
+export async function logout() {
+  signOut(auth)
+    .then(() => {
+      console.log("로그아웃 성공");
+    })
+    .catch((error) => {
+      console.log("logout error", error);
+    });
+}
